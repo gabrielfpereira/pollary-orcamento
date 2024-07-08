@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Orçamentos de Marcenaria</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto p-8">
+        <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+            <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Gerador de Orçamentos de Marcenaria</h1>
+            <div class="mb-4">
+                <label for="mdfPrice" class="block text-gray-700">Valor da Chapa de MDF (R$):</label>
+                <input type="number" id="mdfPrice" step="0.01" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="mdfWidth" class="block text-gray-700">Largura da Chapa de MDF (mm):</label>
+                <input type="number" id="mdfWidth" class="w-full p-2 border border-gray-300 rounded mt-1" value="1850">
+            </div>
+            <div class="mb-4">
+                <label for="mdfHeight" class="block text-gray-700">Altura da Chapa de MDF (mm):</label>
+                <input type="number" id="mdfHeight" class="w-full p-2 border border-gray-300 rounded mt-1" value="2750">
+            </div>
+            <div class="mb-4">
+                <label for="pieces" class="block text-gray-700">Medidas das Peças (formato: largura,altura,quantidade
+                    por linha):</label>
+                <textarea id="pieces" rows="5" class="w-full p-2 border border-gray-300 rounded mt-1"
+                    placeholder="Exemplo: 500,300,4&#10;600,400,2"></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="additionalCosts" class="block text-gray-700">Outros Custos (um por linha, formato:
+                    descrição, valor):</label>
+                <textarea id="additionalCosts" rows="5" class="w-full p-2 border border-gray-300 rounded mt-1"
+                    placeholder="Exemplo: Pregos,15.00&#10;Cola,10.50"></textarea>
+            </div>
+            <button onclick="calculateCost()"
+                class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Calcular Orçamento</button>
+            <div class="result mt-6 p-4 bg-gray-50 rounded" id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculateCost() {
+            // Pegando os valores de entrada
+            const mdfPrice = parseFloat(document.getElementById('mdfPrice').value);
+            const mdfWidth = parseFloat(document.getElementById('mdfWidth').value);
+            const mdfHeight = parseFloat(document.getElementById('mdfHeight').value);
+            const piecesInput = document.getElementById('pieces').value;
+            const additionalCostsInput = document.getElementById('additionalCosts').value;
+
+            // Calculando a área total da chapa de MDF
+            const mdfArea = mdfWidth * mdfHeight;
+
+            // Processando as peças
+            const pieces = piecesInput.split('\n');
+            let totalCost = 0;
+            let resultHTML = '<h3 class="text-xl font-bold mb-4">Detalhes do Cálculo</h3>';
+            pieces.forEach(piece => {
+                const [width, height, quantity] = piece.split(',').map(Number);
+                const pieceArea = width * height;
+                const pieceCost = (pieceArea / mdfArea) * mdfPrice * quantity;
+                totalCost += pieceCost;
+
+                resultHTML += `<p class="mb-2">Peça (${width}mm x ${height}mm) x ${quantity} - Custo: R$ ${pieceCost.toFixed(2)}</p>`;
+            });
+
+            // Processando outros custos
+            const additionalCosts = additionalCostsInput.split('\n');
+            let additionalTotalCost = 0;
+            resultHTML += '<h3 class="text-xl font-bold mb-4 mt-4">Outros Custos</h3>';
+            additionalCosts.forEach(cost => {
+                const [description, value] = cost.split(',').map(item => item.trim());
+                const costValue = parseFloat(value);
+                additionalTotalCost += costValue;
+
+                resultHTML += `<p class="mb-2">${description} - Custo: R$ ${costValue.toFixed(2)}</p>`;
+            });
+
+            totalCost += additionalTotalCost;
+
+            // Aplicando a margem de lucro
+            const finalCost = totalCost * 3;
+
+            resultHTML += `<h3 class="text-xl font-bold mt-4">Custo Total: R$ ${totalCost.toFixed(2)}</h3>`;
+            resultHTML += `<h3 class="text-xl font-bold">Preço Final (com margem 3X): R$ ${finalCost.toFixed(2)}</h3>`;
+
+            document.getElementById('result').innerHTML = resultHTML;
+        }
+    </script>
+</body>
+
+</html>
