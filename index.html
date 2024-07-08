@@ -68,18 +68,20 @@
             });
 
             // Processando outros custos
-            const additionalCosts = additionalCostsInput.split('\n');
-            let additionalTotalCost = 0;
-            resultHTML += '<h3 class="text-xl font-bold mb-4 mt-4">Outros Custos</h3>';
-            additionalCosts.forEach(cost => {
-                const [description, value] = cost.split(',').map(item => item.trim());
-                const costValue = parseFloat(value);
-                additionalTotalCost += costValue;
+            if (additionalCostsInput.trim() !== '') {
+                const additionalCosts = additionalCostsInput.split('\n');
+                let additionalTotalCost = 0;
+                resultHTML += '<h3 class="text-xl font-bold mb-4 mt-4">Outros Custos</h3>';
+                additionalCosts.forEach(cost => {
+                    const [description, value] = cost.split(',').map(item => item.trim());
+                    const costValue = parseFloat(value);
+                    additionalTotalCost += costValue;
 
-                resultHTML += `<p class="mb-2">${description} - Custo: R$ ${costValue.toFixed(2)}</p>`;
-            });
+                    resultHTML += `<p class="mb-2">${description} - Custo: R$ ${costValue.toFixed(2)}</p>`;
+                });
 
-            totalCost += additionalTotalCost;
+                totalCost += additionalTotalCost;
+            }
 
             // Aplicando a margem de lucro
             const finalCost = totalCost * 3;
